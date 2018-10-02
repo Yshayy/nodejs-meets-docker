@@ -14,10 +14,12 @@ const subscriptions =  defer(async ()=> await axios.default.get(`${process.env.S
                 .pipe(
                     map(x=> x.data),
                     flatMap(x=> from(x)),
+                    map(x=> ({type: "add", subscription: x })),
+                    tap(x=> console.log(x))
                 )
 
 
-const newSubscriptions = createNatsObservable(nats,"new-subscriptions")
+const newSubscriptions = createNatsObservable(nats,"update-subscriptions")
 .pipe(
     map(x=> JSON.parse(x)),
 );
@@ -25,10 +27,15 @@ const newSubscriptions = createNatsObservable(nats,"new-subscriptions")
 const allSubscriptions = {};
 
 merge(subscriptions, newSubscriptions)
-    .subscribe(x=>{
-        let feedEntry = getFeedEntryKey(x.source);
+    .subscribe(({type,subscription}) =>{
+        let feedEntry = getFeedEntryKey(subscription.source);
         allSubscriptions[feedEntry] = allSubscriptions[feedEntry] || {};
-        allSubscriptions[feedEntry][`${x.target.type}:${x.target.address}`] = x.target;
+        if (type === "add"){
+            allSubscriptions[feedEntry][`${subscription.target.type}:${subscription.target.address}`] = subscription.target;
+        }
+        if (type === "remove"){
+            delete allSubscriptions[feedEntry][`${subscription.target.type}:${subscription.target.address}`];
+        }
     })
 
 createNatsObservable(nats,"feed-messages")

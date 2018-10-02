@@ -11,11 +11,11 @@ const feeds =  defer(async ()=> await axios.default.get(`${process.env.SUBSCRIPT
                     flatMap(x=> from(x)),
                 )
 
-const newFeeds = createNatsObservable(nats,"new-subscriptions")
+const newFeeds = createNatsObservable(nats,"update-subscriptions")
 .pipe(
     map(x=> JSON.parse(x)),
-    filter(x=> x.source.type === "stocktwits"),
-    map(x=> x.source.feed)
+    filter(({subscription})=> subscription.source.type === "stocktwits"),
+    map(({subscription})=> subscription.source.feed)
 )
 
 const allFeeds = merge(feeds, newFeeds).pipe(distinct());

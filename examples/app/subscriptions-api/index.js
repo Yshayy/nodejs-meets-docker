@@ -28,8 +28,11 @@ app.post(
       await db.collection("subscriptions").insert(
           msg
       );
-      nats.publish("new-subscriptions", 
-          JSON.stringify(msg)
+      nats.publish("update-subscriptions", 
+          JSON.stringify({
+              type: "add",
+              subscription: msg
+          })
       );
       res.sendStatus(200);
   })
@@ -48,9 +51,16 @@ app.delete(
       id : Joi.string().required()
   }),
   asyncHandler(async (req, res) => {
+    let subscription = await db.collection("subscriptions").findOne({_id: mongoist.ObjectId(req.params.id)});
     await db.collection("subscriptions").remove({
         _id: mongoist.ObjectId(req.params.id)
     }, { justOne:true });
+    nats.publish("update-subscriptions", 
+          JSON.stringify({
+              type: "remove",
+              subscription: subscription
+          })
+      );
     res.sendStatus(200);
   })
 );
