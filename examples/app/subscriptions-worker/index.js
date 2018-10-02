@@ -26,10 +26,9 @@ const allSubscriptions = {};
 
 merge(subscriptions, newSubscriptions)
     .subscribe(x=>{
-        console.log("subscription data", x);
         let feedEntry = getFeedEntryKey(x.source);
-        allSubscriptions[feedEntry] = allSubscriptions[feedEntry] || [];
-        allSubscriptions[feedEntry].push(x.target);
+        allSubscriptions[feedEntry] = allSubscriptions[feedEntry] || {};
+        allSubscriptions[feedEntry][`${x.target.type}:${x.target.address}`] = x.target;
     })
 
 createNatsObservable(nats,"feed-messages")
@@ -38,7 +37,7 @@ createNatsObservable(nats,"feed-messages")
             map(JSON.parse),
             flatMap(x=>
                 from(
-                    allSubscriptions[getFeedEntryKey(x.source)]
+                    Object.values(allSubscriptions[getFeedEntryKey(x.source)])
                 ).pipe(
                     map(target=> ({target, title: x.title , message:x.body}))
                 )

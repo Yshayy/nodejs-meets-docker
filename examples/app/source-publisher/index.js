@@ -21,7 +21,7 @@ const newFeeds = createNatsObservable(nats,"new-subscriptions")
 const allFeeds = merge(feeds, newFeeds).pipe(distinct());
 
 allFeeds.pipe(
-   flatMap(x=> (feedsData[x] || empty()).pipe(
+   flatMap(x=> feedsData.get(x).pipe(
     map(msg=> ({
         title: "new stock info on " + x,
         body: msg.body,
