@@ -1,0 +1,16 @@
+{
+  "name": "source-publisher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "nats": "^1.0.1",
+    "rxjs": "^6.3.3"
+  }
+}

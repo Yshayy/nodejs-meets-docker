@@ -7,3 +7,23 @@ services:
     environment:
       - SENDER_EMAIL=yshay@nodejs-docker.test
       - SENDGRID_API_KEY=***
+  subscriptions-api:
+    image: yshayy/nodejs-meetup-subscriptions-api
+    build: ./subscriptions-api
+    environment:
+      - MONGO_URL=mongodb://root:example@mongo
+      - NATS_URL=nats://nats:4222
+  source-publisher:
+    image: yshayy/nodejs-meetup-source-publisher
+    build: ./source-publisher
+    environment:
+      - SUBSCRIPTIONS_API_URL=http://subscriptions-api
+      - NATS_URL=nats://nats:4222
+  
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+  nats:
+    image: nats:1.3.0-linux
