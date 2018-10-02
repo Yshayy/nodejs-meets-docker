@@ -1,0 +1,23 @@
+@startuml
+skinparam monochrome reverse
+actor user
+node "subscriptions-api" as subscriptionsApi
+node "subscriptions-worker" as subscriptionsWorker
+node "email-notifier" as emailSender
+node "source-publisher" as sourcePublisher
+queue "messagebus-nats" as nats
+database "db-mongodb" as mongodb
+database "twitter" as twitter
+subscriptionsApi <-right-> mongodb
+sourcePublisher <-up- twitter : tweets
+sourcePublisher <-- subscriptionsApi : sources
+sourcePublisher -up-> nats : messages
+subscriptionsWorker <-- subscriptionsApi : subscriptions
+subscriptionsWorker <-up- nats : messages
+subscriptionsWorker --> emailSender
+
+user -up-> subscriptionsApi: subcribe
+user <-up- emailSender: email
+
+
+@enduml
