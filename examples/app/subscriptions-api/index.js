@@ -22,12 +22,13 @@ app.post(
     })
  })),
   asyncHandler(async (req, res) => {  
-      await db.collection("subscriptions").insert({
-          ...req.body
-      });
-      nats.publish("new-subscriptions", {
-          ...req.body
-      });
+      const msg = {...req.body};
+      await db.collection("subscriptions").insert(
+          msg
+      );
+      nats.publish("new-subscriptions", 
+          JSON.stringify(msg)
+      );
       res.sendStatus(200);
   })
 );
@@ -64,7 +65,7 @@ app.get(
         "source.feed": true
     })
 
-    res.send(sources.map(x=>x.source.feed));
+    res.json([...new Set(sources.map(x=>x.source.feed))]);
   })
 );
 

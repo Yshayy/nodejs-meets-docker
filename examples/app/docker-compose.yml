@@ -17,7 +17,7 @@ services:
     image: yshayy/nodejs-meetup-source-publisher
     build: ./source-publisher
     environment:
-      - SUBSCRIPTIONS_API_URL=http://subscriptions-api
+      - SUBSCRIPTIONS_API_URL=http://subscriptions-api:3000
       - NATS_URL=nats://nats:4222
   
   mongo:
