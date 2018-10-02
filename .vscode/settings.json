@@ -1,0 +1,18 @@
+{
+  "workbench.colorTheme": "GitHub Clean White",
+  "workbench.colorCustomizations": {
+    "editorCursor.background": "#ffffff",
+    "editorCursor.foreground": "#0000bb",
+    "editor.lineHighlightBackground": "#f0f0f0",
+    "editor.selectionBackground": "#aaeeff"
+  },
+  "workbench.statusBar.visible": false,
+  // "workbench.activityBar.visible": true,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "none",
+  "editor.renderIndentGuides": false,
+  "editor.fontWeight": "600",
+  "editor.fontSize": 14,
+  "terminal.integrated.fontWeight": "800",
+  "terminal.integrated.fontSize": 14
+}
