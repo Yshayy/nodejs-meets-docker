@@ -5,7 +5,7 @@ const {empty, merge, from, defer} = require('rxjs');
 const { map, filter, distinct, tap, flatMap } = require("rxjs/operators");
 const feedsData = require("./streams/feeds");
 
-const feeds =  defer(async ()=> await axios.default.get(`${process.env.SUBSCRIPTIONS_API_URL}/api/sources/twitter`))
+const feeds =  defer(async ()=> await axios.default.get(`${process.env.SUBSCRIPTIONS_API_URL}/api/sources/stocktwits`))
                 .pipe(
                     map(x=> x.data),
                     flatMap(x=> from(x)),
@@ -14,7 +14,7 @@ const feeds =  defer(async ()=> await axios.default.get(`${process.env.SUBSCRIPT
 const newFeeds = createNatsObservable(nats,"new-subscriptions")
 .pipe(
     map(x=> JSON.parse(x)),
-    filter(x=> x.source.type === "twitter"),
+    filter(x=> x.source.type === "stocktwits"),
     map(x=> x.source.feed)
 )
 
@@ -23,13 +23,20 @@ const allFeeds = merge(feeds, newFeeds).pipe(distinct());
 allFeeds.pipe(
    flatMap(x=> (feedsData[x] || empty()).pipe(
     map(msg=> ({
+        title: "new stock info on " + x,
         body: msg.body,
-        source: x.source
+        source: {
+            type: "stocktwits",
+            feed: x
+        }
     })))
    ) ,
     tap(x=> console.log(x))
 )
-.subscribe(x=> nats.publish("feed-messages", JSON.stringify(x)));
+.subscribe(x=> {
+    console.log("publishing new message");
+    nats.publish("feed-messages", JSON.stringify(x))
+});
 
 
 

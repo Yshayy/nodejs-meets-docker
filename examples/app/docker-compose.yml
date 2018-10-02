@@ -10,15 +10,33 @@ services:
   subscriptions-api:
     image: yshayy/nodejs-meetup-subscriptions-api
     build: ./subscriptions-api
+    depends_on:
+      - mongo
+      - nats
     environment:
       - MONGO_URL=mongodb://root:example@mongo
       - NATS_URL=nats://nats:4222
   source-publisher:
     image: yshayy/nodejs-meetup-source-publisher
     build: ./source-publisher
+    depends_on:
+      - subscriptions-api
+      - nats
     environment:
       - SUBSCRIPTIONS_API_URL=http://subscriptions-api:3000
       - NATS_URL=nats://nats:4222
+
+  subscriptions-worker:
+    image: yshayy/nodejs-meetup-subscriptions-worker
+    build: ./subscriptions-worker
+    depends_on:
+      - mongo
+      - nats
+      - email-notifier
+    environment:
+      - NATS_URL=nats://nats:4222
+      - EMAIL_NOTIFIER_URL=http://email-notifier:3000
+      - SUBSCRIPTIONS_API_URL=http://subscriptions-api:3000
   
   mongo:
     image: mongo

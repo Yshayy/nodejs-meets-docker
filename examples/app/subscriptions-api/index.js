@@ -9,11 +9,13 @@ const db = mongoist(process.env.MONGO_URL, {});
 
 app.use(bodyParser.json());
 
+const sources = ['twitter', 'stocktwits'];
+
 app.post(
   "/api/subscriptions",
   validator.body(Joi.object({ 
       source: Joi.object({
-          type: Joi.string().required().valid('twitter'),
+          type: Joi.string().required().valid(sources),
           feed: Joi.string().required()
       }),
       target: Joi.object({
@@ -56,7 +58,7 @@ app.delete(
 app.get(
   "/api/sources/:type",
   validator.params({
-    type : Joi.string().required()
+    type : Joi.string().valid(sources).required()
   }),
   asyncHandler(async (req, res) => {
     const sources = await db.collection("subscriptions").find({
