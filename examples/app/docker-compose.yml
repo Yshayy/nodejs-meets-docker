@@ -2,23 +2,22 @@ version: '3.1'
 
 services:
   email-notifier:
-    image: yshayy/nodejs-meetup-email-notifier
-    build: ./email-notifier
+    image: yshay/nodejs-meetup-email-notifier
     environment:
       - SENDER_EMAIL=yshay@nodejs-docker.test
-      - SENDGRID_API_KEY=***
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
   subscriptions-api:
-    image: yshayy/nodejs-meetup-subscriptions-api
-    build: ./subscriptions-api
+    image: yshay/nodejs-meetup-subscriptions-api
     depends_on:
       - mongo
       - nats
+    ports:
+      - 9000:3000
     environment:
       - MONGO_URL=mongodb://root:example@mongo
       - NATS_URL=nats://nats:4222
   source-publisher:
-    image: yshayy/nodejs-meetup-source-publisher
-    build: ./source-publisher
+    image: yshay/nodejs-meetup-source-publisher
     depends_on:
       - subscriptions-api
       - nats
@@ -27,8 +26,7 @@ services:
       - NATS_URL=nats://nats:4222
 
   subscriptions-worker:
-    image: yshayy/nodejs-meetup-subscriptions-worker
-    build: ./subscriptions-worker
+    image: yshay/nodejs-meetup-subscriptions-worker
     depends_on:
       - mongo
       - nats
