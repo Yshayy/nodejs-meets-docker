@@ -14,8 +14,7 @@ const subscriptions =  defer(async ()=> await axios.default.get(`${process.env.S
                 .pipe(
                     map(x=> x.data),
                     flatMap(x=> from(x)),
-                    map(x=> ({type: "add", subscription: x })),
-                    tap(x=> console.log(x))
+                    map(x=> ({type: "add", subscription: x }))
                 )
 
 
@@ -38,7 +37,7 @@ merge(subscriptions, newSubscriptions)
         }
     })
 
-createNatsObservable(nats,"feed-messages")
+createNatsObservable(nats,"feed-messages", "subscriptions-worker")
         .pipe(
             tap(x=> console.log("new feed message", x)),
             map(JSON.parse),

@@ -3,8 +3,9 @@ services:
   email-notifier:
     ports:
       - "4000:3000"
+      - "9001:9229"
     build: ./email-notifier
-    command: '/bin/sh -c "npm i -g nodemon && nodemon index.js"'
+    command: '/bin/sh -c "npm i -g nodemon && nodemon --inspect=0.0.0.0 index.js"'
     volumes: 
       - ./email-notifier:/app
       - /app/node_modules
@@ -12,24 +13,33 @@ services:
     build: ./subscriptions-api
     ports:
       - "4001:3000"
-    command: '/bin/sh -c "npm i -g nodemon && nodemon index.js"'
+      - "9002:9229"
+    command: '/bin/sh -c "npm i -g nodemon && nodemon --inspect=0.0.0.0 index.js"'
     volumes: 
       - ./subscriptions-api:/app
       - /app/node_modules
   source-publisher:
-    command: '/bin/sh -c "npm i -g nodemon && nodemon index.js"'
+    command: '/bin/sh -c "npm i -g nodemon && nodemon --inspect=0.0.0.0 index.js"'
     build: ./source-publisher
+    ports: 
+      - "9003:9229"
     volumes: 
       - ./source-publisher:/app
       - /app/node_modules
   subscriptions-worker:
-    command: '/bin/sh -c "npm i -g nodemon && nodemon index.js"'
+    command: '/bin/sh -c "npm i -g nodemon && nodemon --inspect=0.0.0.0 index.js"'
     build: ./subscriptions-worker
+    ports: 
+      - "9004:9229"
     volumes: 
       - ./subscriptions-worker:/app
       - /app/node_modules
   mongo-express:
     image: mongo-express
+    depends_on: 
+      - mongo
+    logging:
+      driver: none
     ports:
       - 4010:8081
     environment:

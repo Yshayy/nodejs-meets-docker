@@ -23,7 +23,7 @@ const allFeeds = merge(feeds, newFeeds).pipe(distinct());
 allFeeds.pipe(
    flatMap(x=> feedsData.get(x).pipe(
     map(msg=> ({
-        title: "new stock info on " + x,
+        title: "new stock info!!! check " + x,
         body: msg.body,
         source: {
             type: "stocktwits",
