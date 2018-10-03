@@ -1,6 +1,6 @@
 const nats = require('nats').connect({url: "nats://nats:4222"});
 const { merge, defer, from  } = require('rxjs')
-const { flatMap, map, tap  } = require('rxjs/operators')
+const { flatMap, map, tap, retry  } = require('rxjs/operators')
 const axios = require('axios');
 const {createNatsObservable} = require("./utils/observable");
 
@@ -12,6 +12,7 @@ const getFeedEntryKey = ({type, feed})=> `${type}:${feed}`
 
 const subscriptions =  defer(async ()=> await axios.default.get(`${process.env.SUBSCRIPTIONS_API_URL}/api/subscriptions`))
                 .pipe(
+                    retry(),
                     map(x=> x.data),
                     flatMap(x=> from(x)),
                     map(x=> ({type: "add", subscription: x }))

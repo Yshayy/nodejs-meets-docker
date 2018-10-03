@@ -2,11 +2,12 @@ const nats = require('nats').connect({url: "nats://nats:4222"})
 const axios = require('axios');
 const {createNatsObservable} = require("./utils/observable");
 const {empty, merge, from, defer} = require('rxjs');
-const { map, filter, distinct, tap, flatMap } = require("rxjs/operators");
+const { map, filter, distinct, tap, retry, flatMap } = require("rxjs/operators");
 const feedsData = require("./streams/feeds");
 
 const feeds =  defer(async ()=> await axios.default.get(`${process.env.SUBSCRIPTIONS_API_URL}/api/sources/stocktwits`))
                 .pipe(
+                    retry(),
                     map(x=> x.data),
                     flatMap(x=> from(x)),
                 )
