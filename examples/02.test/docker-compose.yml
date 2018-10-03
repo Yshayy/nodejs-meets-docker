@@ -10,6 +10,6 @@ services:
       - SERVICE_URL=http://hello-color:3000
 
   hello-color:
-    image: yshayy/hello-color
+    image: yshay/hello-color
 
   # add local service example
