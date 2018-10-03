@@ -30,8 +30,7 @@ allFeeds.pipe(
             feed: x
         }
     })))
-   ) ,
-    tap(x=> console.log(x))
+   )
 )
 .subscribe(x=> {
     console.log("publishing new message");

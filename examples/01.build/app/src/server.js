@@ -3,6 +3,7 @@ const magic = require('./magic')(['underline', 'inverse', 'grey', 'yellow', 'red
 
 const app = new http.Server((req, res) => {
   const message = magic(req.url);
+  console.log(message);
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.write(message);
   res.end('\n');
