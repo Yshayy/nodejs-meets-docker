@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+
+  tests:
+    build: ./test
+    depends_on: 
+      - hello-color
+    environment:
+      - SERVICE_URL=http://hello-color:3000
+
+  hello-color:
+    image: yshayy/hello-color
+
+  # add local service example
